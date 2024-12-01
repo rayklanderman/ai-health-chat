@@ -5,8 +5,6 @@ import './App.css'
 import ChatInterface from './components/ChatInterface'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
@@ -15,7 +13,7 @@ function App() {
           <p className="text-gray-600">Your personal health companion powered by AI</p>
         </div>
       </header>
-      <main>
+      <main className="container mx-auto px-4">
         <ChatInterface />
       </main>
     </div>
