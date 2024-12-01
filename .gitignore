@@ -29,12 +29,23 @@ dist-ssr
 .env.*
 !.env.example
 
-# Build files
+# Security and keys
+*.pem
+*.key
+*.cert
+*.crt
+
+# Build outputs
 build/
-out/
+coverage/
 
-# Vercel
+# Temporary files
+*.tmp
+*.temp
+.cache
 .vercel
 
-.vercel
-.env*.local
+# Personal notes and documentation
+*.private.*
+TODO.md
+NOTES.md

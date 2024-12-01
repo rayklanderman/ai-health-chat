@@ -53,6 +53,28 @@ The app is deployed on Vercel and can be accessed at [https://ai-health-chat.ver
 
 Feel free to open issues and pull requests!
 
+## Security Measures
+
+This project implements several security best practices:
+
+### API Key Security
+- Never commit API keys to the repository
+- Use environment variables for all sensitive data
+- Include `.env.example` as a template without real values
+
+### Data Privacy
+- No personal health data is stored
+- All conversations are ephemeral
+- No tracking or analytics of user data
+
+### Usage Guidelines
+- This is a demonstration project for the hackathon
+- Not intended for production medical use
+- Always consult healthcare professionals for medical advice
+
+### License Restrictions
+This code is provided for hackathon evaluation purposes. Any usage, reproduction, or distribution must comply with the hackathon rules and guidelines.
+
 ## License 
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
