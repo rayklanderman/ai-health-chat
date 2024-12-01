@@ -1,54 +1,87 @@
-# AI Health Assistant
+# AI Health Assistant 🏥
 
-An intelligent healthcare chatbot powered by Google's Gemini AI that provides general health information and guidance.
+A modern, AI-powered health information chat application built with React, TypeScript, and Google's Gemini AI.
 
-## Features
+![AI Health Chat](public/preview.png)
 
-- Real-time AI-powered health conversations
+## Features 🌟
+
+- Real-time AI health guidance
 - Modern, responsive UI
-- Secure API key management
-- Helpful health information and guidance
-- Professional and empathetic responses
+- Privacy-focused design
+- General health information
+- Medical term explanations
+- Lifestyle recommendations
 
-## Tech Stack
+## Tech Stack 💻
 
-- React + TypeScript
+- React 18
+- TypeScript
 - Vite
 - Tailwind CSS
 - Google Gemini AI
-- Heroicons
+- Vercel (Deployment)
 
-## Quick Start
+## Getting Started 🚀
 
-1. Clone the repository
-2. Get a Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-3. Create a `.env` file in the root directory and add:
-   ```
-   VITE_GEMINI_API_KEY=your_api_key_here
-   ```
-4. Install dependencies:
-   ```bash
-   npm install
-   ```
-5. Start the development server:
-   ```bash
-   npm run dev
-   ```
+### Prerequisites
 
-## Usage
+- Node.js 16+
+- npm or yarn
+- Google Gemini API key
 
-Simply type your health-related questions in the chat interface and get AI-powered responses. The assistant can help with:
-- Understanding medical terms
-- General health information
-- Healthy lifestyle suggestions
-- Basic wellness guidance
+### Installation
 
-Note: This assistant is for informational purposes only and should not replace professional medical advice.
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/ai-health-chat.git
+cd ai-health-chat
+```
 
-## Contributing
+2. Install dependencies:
+```bash
+npm install
+```
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
+3. Create a `.env` file in the root directory:
+```env
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+4. Start the development server:
+```bash
+npm run dev
+```
+
+## Deployment 🌐
+
+This project is deployed on Vercel. To deploy your own instance:
+
+1. Push your code to GitHub
+2. Import your repository to Vercel
+3. Add your environment variables
+4. Deploy!
+
+## Usage Guidelines 📝
+
+- This AI assistant provides general health information only
+- Not a substitute for professional medical advice
+- Always consult healthcare professionals for medical concerns
+- No personal medical data is stored
+
+## Contributing 🤝
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License 📄
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments 🙏
+
+- Google Gemini AI for powering the health assistant
+- React and Vite communities
+- All contributors and users
+
+---
+Made with ❤️ for better health information access
