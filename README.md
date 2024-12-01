@@ -1,17 +1,38 @@
 # AI Health Assistant
 
-An AI-powered health information chat assistant built with React, TypeScript, and Google's Gemini AI.
+An intelligent health information assistant powered by advanced AI technology, designed to provide rapid guidance for medical situations and emergency procedures.
 
 🔗 **Live Demo**: [AI Health Assistant](https://ai-health-chat.vercel.app/)
 
 ## Features
 
-- 🤖 Powered by Google's Gemini AI
-- 💬 Natural conversation interface
-- 🏥 General health information
-- 📱 PWA support for mobile installation
-- 🔒 Privacy-focused design
-- ⚡ Fast and responsive UI
+- 🚨 Emergency Response Guidance
+  - Step-by-step first aid procedures
+  - Quick symptom assessment
+  - Emergency contact recommendations
+  - Immediate action protocols
+
+- 🏥 Health Information
+  - Detailed medical term explanations
+  - Common health condition information
+  - Preventive care guidelines
+  - Treatment options overview
+
+- 🔒 Privacy & Security
+  - No personal data storage
+  - Encrypted conversations
+  - Private and secure chat
+  - HIPAA-aware design
+
+- ⚡ Technical Features
+  - Real-time AI responses
+  - Mobile-friendly PWA
+  - Offline capability
+  - Natural language processing
+
+## Important Notice
+
+This AI assistant provides general health information and emergency guidance. While it offers valuable information, it should not replace professional medical advice. In case of serious medical emergencies, immediately contact emergency services or visit the nearest healthcare facility.
 
 ## Technology Stack
 
@@ -45,45 +66,35 @@ VITE_GEMINI_API_KEY=your_api_key_here
 npm run dev
 ```
 
-## Deployment
-
-The app is deployed on Vercel and can be accessed at [https://ai-health-chat.vercel.app/](https://ai-health-chat.vercel.app/)
-
-## Contributing
-
-Feel free to open issues and pull requests!
-
 ## Security Measures
 
 This project implements several security best practices:
 
 ### API Key Security
-- Never commit API keys to the repository
-- Use environment variables for all sensitive data
-- Include `.env.example` as a template without real values
+- Environment variables for sensitive data
+- Secure key management
+- Protected API endpoints
 
 ### Data Privacy
-- No personal health data is stored
-- All conversations are ephemeral
-- No tracking or analytics of user data
+- No personal health data storage
+- Ephemeral conversations
+- End-to-end privacy
 
 ### Usage Guidelines
-- This is a demonstration project for the hackathon
-- Not intended for production medical use
-- Always consult healthcare professionals for medical advice
+- For informational purposes only
+- Always seek professional medical help for emergencies
+- Regular updates for accuracy
 
-### License Restrictions
-This code is provided for hackathon evaluation purposes. Any usage, reproduction, or distribution must comply with the hackathon rules and guidelines.
+## Contributing
 
-## License 
+Contributions to improve the assistant's capabilities are welcome! Please feel free to open issues and pull requests.
+
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments 
+## Acknowledgments
 
 - Google Gemini AI for powering the health assistant
 - React and Vite communities
-- All contributors and users
-
----
-Made with ❤️ for better health information access
+- Healthcare professionals who provided guidance

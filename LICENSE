@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2024 AI Health Assistant - Hackathon Project
+Copyright (c) 2024 AI Health Assistant
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -12,11 +12,11 @@ furnished to do so, subject to the following conditions:
 1. The above copyright notice and this permission notice shall be included in all
    copies or substantial portions of the Software.
 
-2. Any use of this code must comply with the rules and guidelines of the hackathon
-   for which it was originally submitted.
+2. This software is provided for informational purposes only and is not a
+   substitute for professional medical advice, diagnosis, or treatment.
 
-3. This software is provided for educational and demonstration purposes only.
-   It is not intended for production medical use.
+3. Users must acknowledge that this is an AI-assisted tool and should seek
+   professional medical help for any health emergencies or concerns.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
