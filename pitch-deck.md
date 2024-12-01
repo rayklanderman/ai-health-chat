@@ -1,15 +1,15 @@
-# AI Health Assistant
+# Slide 1: AI Health Assistant
 ## Empowering Health Access in Kenya
 ---
 
-# Problem
+# Slide 2: Problem
 - 74% of Kenyans lack quick access to medical advice
 - Long distances to health facilities
 - High cost of medical consultations
 - Limited emergency response knowledge
 ---
 
-# Solution
+# Slide 3: Solution
 AI Health Assistant:
 - 24/7 instant medical guidance
 - Emergency response procedures
@@ -17,7 +17,7 @@ AI Health Assistant:
 - Works offline on any phone
 ---
 
-# Product
+# Slide 4: Product
 ![AI Health Chat Demo](https://ai-health-chat.vercel.app/)
 - Emergency guidance
 - First aid instructions
@@ -25,7 +25,7 @@ AI Health Assistant:
 - Health facility locator
 ---
 
-# Target Market - Kenya
+# Slide 5: Target Market - Kenya
 Primary Users:
 - Rural communities
 - Urban households
@@ -33,13 +33,21 @@ Primary Users:
 - School health offices
 ---
 
-# Market Size
-- TAM: 54M (All Kenyans)
-- SAM: 33M (Smartphone users)
-- SOM: 5M (Year 1 target)
+# Slide 6: Market Size
+Total Addressable Market (TAM):
+- 54M Kenyans × 1,000 KES/year
+- Value: 54B KES
+
+Serviceable Addressable Market (SAM):
+- 33M Smartphone Users × 600 KES/year
+- Value: 19.8B KES
+
+Serviceable Obtainable Market (SOM):
+- 5M Year 1 Users × 300 KES/year
+- Value: 1.5B KES
 ---
 
-# Go-To-Market
+# Slide 7: Go-To-Market
 1. Partner with:
    - County hospitals
    - M-PESA
@@ -48,7 +56,7 @@ Primary Users:
 3. Radio advertising
 ---
 
-# Competitors
+# Slide 8: Competitors
 1. M-TIBA
    - Limited to payments
    - No AI guidance
@@ -58,21 +66,21 @@ Primary Users:
    - No emergency support
 ---
 
-# Competitive Advantage
+# Slide 9: Competitive Advantage
 - Works offline
 - Local language support
 - AI-powered responses
 - Free basic access
 ---
 
-# Traction
+# Slide 10: Traction
 - 10,000 beta users
 - 5 county partnerships
 - 98% user satisfaction
 - 15,000 consultations
 ---
 
-# Business Model
+# Slide 11: Business Model
 Free Tier:
 - Basic health info
 - Emergency guidance
@@ -82,14 +90,14 @@ Premium (100 KES/month):
 - Priority support
 ---
 
-# Social Impact
+# Slide 12: Social Impact
 SDG 3: Good Health & Well-being
 - Reducing healthcare gaps
 - Saving lives through quick response
 - Empowering rural communities
 ---
 
-# Our Ask
+# Slide 13: Our Ask
 Investment: 5M KES
 For:
 - Local server deployment
@@ -98,14 +106,14 @@ For:
 - County partnerships
 ---
 
-# Team
+# Slide 14: Team
 - Ray Klanderman
   - Full Stack Developer
   - AI/ML Specialist
   - Healthcare Tech Innovator
 ---
 
-# Thank You
+# Slide 15: Thank You
 Contact:
 - Email: devray@techie.com
 - Phone: +254101700240
