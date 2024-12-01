@@ -9,6 +9,11 @@
     "VITE_GEMINI_API_KEY": "AIzaSyBb1fDGQPvY-zqxMbF6Njrny-k2iwvbCvc"
   },
   "routes": [
+    { "handle": "filesystem" },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
     {
       "src": "/(.*)",
       "dest": "/index.html"
