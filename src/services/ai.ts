@@ -16,6 +16,23 @@ Keep responses concise and focused.`;
 let lastRequestTime = 0;
 const MIN_REQUEST_INTERVAL = 2000; // 2 seconds between requests
 
+// Rate limiting configuration
+const RATE_LIMIT = {
+  requests: 0,
+  lastReset: Date.now(),
+  resetInterval: 3600000, // 1 hour in milliseconds
+  maxRequests: 60 // requests per hour
+};
+
+// Reset rate limit counter
+function resetRateLimit() {
+  const now = Date.now();
+  if (now - RATE_LIMIT.lastReset >= RATE_LIMIT.resetInterval) {
+    RATE_LIMIT.requests = 0;
+    RATE_LIMIT.lastReset = now;
+  }
+}
+
 export async function getAIResponse(userMessage: string): Promise<string> {
   try {
     // Check rate limiting
@@ -25,6 +42,16 @@ export async function getAIResponse(userMessage: string): Promise<string> {
       await new Promise(resolve => setTimeout(resolve, MIN_REQUEST_INTERVAL - timeSinceLastRequest));
     }
     lastRequestTime = Date.now();
+
+    resetRateLimit();
+    
+    // Check rate limit
+    if (RATE_LIMIT.requests >= RATE_LIMIT.maxRequests) {
+      const waitTime = Math.ceil((RATE_LIMIT.resetInterval - (Date.now() - RATE_LIMIT.lastReset)) / 60000);
+      return `Rate limit exceeded. Please try again in about ${waitTime} minutes.`;
+    }
+    
+    RATE_LIMIT.requests++;
 
     // For text-only input, use the gemini-pro model
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
