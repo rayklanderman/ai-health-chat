@@ -11,10 +11,12 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "generate-favicon": "node scripts/generate-favicon.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.2.1",
+    "canvas": "^2.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

@@ -1,83 +1,63 @@
-# AI Health Assistant 🏥
+# AI Health Assistant
 
-A modern, AI-powered health information chat application built with React, TypeScript, and Google's Gemini AI.
+An AI-powered health information chat assistant built with React, TypeScript, and Google's Gemini AI.
 
-![AI Health Chat](public/preview.png)
+🔗 **Live Demo**: [AI Health Assistant](https://ai-health-chat.vercel.app/)
 
-## Features 🌟
+## Features
 
-- Real-time AI health guidance
-- Modern, responsive UI
-- Privacy-focused design
-- General health information
-- Medical term explanations
-- Lifestyle recommendations
+- 🤖 Powered by Google's Gemini AI
+- 💬 Natural conversation interface
+- 🏥 General health information
+- 📱 PWA support for mobile installation
+- 🔒 Privacy-focused design
+- ⚡ Fast and responsive UI
 
-## Tech Stack 💻
+## Technology Stack
 
 - React 18
 - TypeScript
 - Vite
 - Tailwind CSS
 - Google Gemini AI
-- Vercel (Deployment)
+- PWA (Progressive Web App)
 
-## Getting Started 🚀
+## Getting Started
 
-### Prerequisites
-
-- Node.js 16+
-- npm or yarn
-- Google Gemini API key
-
-### Installation
-
-1. Clone the repository:
+1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/ai-health-chat.git
+git clone https://github.com/rayklanderman/ai-health-chat.git
 cd ai-health-chat
 ```
 
-2. Install dependencies:
+2. Install dependencies
 ```bash
 npm install
 ```
 
-3. Create a `.env` file in the root directory:
-```env
-VITE_GEMINI_API_KEY=your_gemini_api_key_here
+3. Create a `.env` file with your Gemini API key
+```bash
+VITE_GEMINI_API_KEY=your_api_key_here
 ```
 
-4. Start the development server:
+4. Start the development server
 ```bash
 npm run dev
 ```
 
-## Deployment 🌐
+## Deployment
 
-This project is deployed on Vercel. To deploy your own instance:
+The app is deployed on Vercel and can be accessed at [https://ai-health-chat.vercel.app/](https://ai-health-chat.vercel.app/)
 
-1. Push your code to GitHub
-2. Import your repository to Vercel
-3. Add your environment variables
-4. Deploy!
+## Contributing
 
-## Usage Guidelines 📝
+Feel free to open issues and pull requests!
 
-- This AI assistant provides general health information only
-- Not a substitute for professional medical advice
-- Always consult healthcare professionals for medical concerns
-- No personal medical data is stored
-
-## Contributing 🤝
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License 📄
+## License 
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments 🙏
+## Acknowledgments 
 
 - Google Gemini AI for powering the health assistant
 - React and Vite communities
