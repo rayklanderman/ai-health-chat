@@ -1,10 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { getAIResponse } from './services/ai';
+import LanguageSelector from './components/LanguageSelector';
 
 function App() {
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [currentLanguage, setCurrentLanguage] = useState(() => {
+    return localStorage.getItem('preferredLanguage') || navigator.language.split('-')[0] || 'en';
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -15,37 +20,122 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
+  // Network status detection
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      // Show a toast or notification that we're back online
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Back Online', {
+          body: 'You are now connected to the internet.',
+          icon: '/android-chrome-192x192.png'
+        });
+      }
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Request notification permission
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Check service worker for online status
+  useEffect(() => {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      const messageChannel = new MessageChannel();
+      messageChannel.port1.onmessage = (event) => {
+        setIsOnline(event.data.online);
+      };
+      navigator.serviceWorker.controller.postMessage('CHECK_ONLINE_STATUS', [messageChannel.port2]);
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    // Add user message
     const userMessage = input.trim();
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setInput('');
     setIsLoading(true);
 
+    // Add user message to chat
+    const newMessages = [...messages, { role: 'user', content: userMessage }];
+    setMessages(newMessages);
+
     try {
-      // Get AI response
-      const response = await getAIResponse(userMessage);
-      setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+      // Include language in the context for the AI
+      const aiResponse = await getAIResponse(userMessage);
+      setMessages([...newMessages, { role: 'assistant', content: aiResponse }]);
     } catch (error) {
-      console.error('Error getting AI response:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'I apologize, but I encountered an error. Please try again.' 
-      }]);
-    } finally {
-      setIsLoading(false);
+      console.error('Error:', error);
+      setMessages([
+        ...newMessages,
+        { 
+          role: 'assistant', 
+          content: currentLanguage === 'en' 
+            ? 'I apologize, but I encountered an error. Please try again.'
+            : 'An error occurred. Switching to English: I apologize, but I encountered an error. Please try again.' 
+        }
+      ]);
     }
+
+    setIsLoading(false);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-4">
+      {!isOnline && (
+        <div className="max-w-4xl mx-auto mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">
+                You are currently offline. Some features may be limited.
+                <button
+                  onClick={() => window.location.reload()}
+                  className="ml-2 font-medium text-yellow-700 underline hover:text-yellow-600"
+                >
+                  Try to reconnect
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="max-w-4xl mx-auto">
         <header className="text-center mb-8 p-6 bg-white rounded-lg shadow-sm">
-          <h1 className="text-4xl font-bold text-blue-600 mb-3">AI Health Assistant</h1>
-          <p className="text-gray-600 text-lg">Your personal health information companion</p>
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex-1">
+              {/* Empty div for spacing */}
+            </div>
+            <h1 className="text-4xl font-bold text-blue-600">AI Health Assistant</h1>
+            <div className="flex-1 flex justify-end">
+              <LanguageSelector
+                currentLanguage={currentLanguage}
+                onLanguageChange={(code) => {
+                  setCurrentLanguage(code);
+                  localStorage.setItem('preferredLanguage', code);
+                }}
+              />
+            </div>
+          </div>
+          <p className="text-gray-600">Your personal AI health companion. Ask me anything about health and wellness!</p>
         </header>
 
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -125,22 +215,33 @@ function App() {
 
           {/* Input Form */}
           <div className="p-4 bg-white border-t border-gray-200">
-            <form onSubmit={handleSubmit} className="flex space-x-4">
-              <input
-                type="text"
+            <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+              <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type your health question..."
-                className="flex-1 p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 placeholder-gray-500"
-                disabled={isLoading}
+                className="flex-1 p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 placeholder-gray-500 min-h-[50px] resize-none"
+                disabled={isLoading || !isOnline}
+                rows={1}
               />
-              <button
-                type="submit"
-                disabled={isLoading || !input.trim()}
-                className="px-6 py-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-              >
-                {isLoading ? 'Sending...' : 'Send'}
-              </button>
+              <div className="flex w-full gap-2 mt-4">
+                <button
+                  type="submit"
+                  disabled={isLoading || !input.trim() || !isOnline}
+                  className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 min-w-[80px] flex-shrink-0 sm:px-8"
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center">
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </div>
+                  ) : (
+                    <span>Send</span>
+                  )}
+                </button>
+              </div>
             </form>
           </div>
         </div>
