@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { getAIResponse } from './services/ai';
 import LanguageSelector from './components/LanguageSelector';
+import { translations } from './translations';
 
 function App() {
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([]);
@@ -11,6 +12,9 @@ function App() {
     return localStorage.getItem('preferredLanguage') || navigator.language.split('-')[0] || 'en';
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Get translations for current language
+  const t = translations[currentLanguage as keyof typeof translations] || translations.en;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -106,12 +110,12 @@ function App() {
             </div>
             <div className="ml-3">
               <p className="text-sm text-yellow-700">
-                You are currently offline. Some features may be limited.
+                {t.offlineMessage}
                 <button
                   onClick={() => window.location.reload()}
                   className="ml-2 font-medium text-yellow-700 underline hover:text-yellow-600"
                 >
-                  Try to reconnect
+                  {t.tryReconnect}
                 </button>
               </p>
             </div>
@@ -120,7 +124,7 @@ function App() {
       )}
       <div className="max-w-4xl mx-auto">
         <header className="relative text-center mb-8 p-6 bg-white rounded-lg shadow-sm">
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-4 z-50">
             <LanguageSelector
               currentLanguage={currentLanguage}
               onLanguageChange={(code) => {
@@ -129,8 +133,14 @@ function App() {
               }}
             />
           </div>
-          <h1 className="text-4xl font-bold text-blue-600 mb-3">AI Health Assistant</h1>
-          <p className="text-gray-600">Your personal AI health companion. Ask me anything about health and wellness!</p>
+          <div className="flex flex-col items-center">
+            <h1 className="text-4xl font-bold text-blue-600 mb-3">
+              <span className="text-3xl">AI</span>{' '}
+              <span className="text-3xl">Health</span>{' '}
+              <span className="text-3xl">Assistant</span>
+            </h1>
+            <p className="text-gray-600 max-w-2xl">{t.appSubtitle}</p>
+          </div>
         </header>
 
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -141,17 +151,11 @@ function App() {
                 <div className="text-center py-8 bg-white rounded-lg shadow-sm">
                   <div className="text-5xl mb-4">👋</div>
                   <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                    Hello! I'm your AI Health Assistant
+                    {t.welcomeMessage}
                   </h2>
                   <p className="text-gray-600">
-                    Feel free to ask me about:
+                    {t.welcomeDescription}
                   </p>
-                  <div className="mt-4 space-y-2">
-                    <p className="text-blue-600">• General health information</p>
-                    <p className="text-blue-600">• Healthy lifestyle tips</p>
-                    <p className="text-blue-600">• Understanding medical terms</p>
-                    <p className="text-blue-600">• Wellness recommendations</p>
-                  </div>
                 </div>
               )}
               {messages.map((message, index) => (
@@ -211,32 +215,20 @@ function App() {
           {/* Input Form */}
           <div className="p-4 bg-white border-t border-gray-200">
             <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-              <textarea
+              <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your health question..."
-                className="flex-1 p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 placeholder-gray-500 min-h-[50px] resize-none"
+                placeholder={t.inputPlaceholder}
+                className="flex-1 p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 placeholder-gray-500"
                 disabled={isLoading || !isOnline}
-                rows={1}
               />
-              <div className="flex w-full gap-2 mt-4">
-                <button
-                  type="submit"
-                  disabled={isLoading || !input.trim() || !isOnline}
-                  className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 min-w-[80px] flex-shrink-0 sm:px-8"
-                >
-                  {isLoading ? (
-                    <div className="flex items-center justify-center">
-                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                    </div>
-                  ) : (
-                    <span>Send</span>
-                  )}
-                </button>
-              </div>
+              <button
+                type="submit"
+                disabled={isLoading || !input.trim() || !isOnline}
+                className="px-6 py-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              >
+                {isLoading ? t.sendingButton : t.sendButton}
+              </button>
             </form>
           </div>
         </div>

@@ -30,13 +30,13 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+        className="flex items-center space-x-2 px-4 py-2.5 bg-white border-2 border-blue-500 rounded-lg hover:bg-blue-50 transition-colors duration-200 shadow-sm"
         aria-label="Select language"
       >
         <span className="text-xl">{currentLang.flag}</span>
-        <span className="hidden sm:inline">{currentLang.name}</span>
+        <span className="text-blue-600 font-medium hidden sm:inline">{currentLang.nativeName}</span>
         <svg
-          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
+          className={`w-4 h-4 text-blue-600 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -51,24 +51,24 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20 border border-gray-200">
-            {SUPPORTED_LANGUAGES.map((language) => (
-              <button
-                key={language.code}
-                onClick={() => {
-                  onLanguageChange(language.code);
-                  setIsOpen(false);
-                }}
-                className={`w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-2
-                  ${currentLanguage === language.code ? 'bg-gray-50 text-blue-600' : ''}`}
-              >
-                <span className="text-xl">{language.flag}</span>
-                <div>
-                  <div className="font-medium">{language.name}</div>
-                  <div className="text-sm text-gray-500">{language.nativeName}</div>
-                </div>
-              </button>
-            ))}
+          <div className="absolute right-0 mt-2 w-48 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-20">
+            <div className="py-1">
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    onLanguageChange(lang.code);
+                    setIsOpen(false);
+                  }}
+                  className={`flex items-center w-full px-4 py-3 text-sm hover:bg-blue-50 transition-colors duration-200 ${
+                    currentLanguage === lang.code ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-700'
+                  }`}
+                >
+                  <span className="text-xl mr-3">{lang.flag}</span>
+                  <span>{lang.nativeName}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </>
       )}
