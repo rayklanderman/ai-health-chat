@@ -11,6 +11,8 @@ function App() {
   const [currentLanguage, setCurrentLanguage] = useState(() => {
     return localStorage.getItem('preferredLanguage') || navigator.language.split('-')[0] || 'en';
   });
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported] = useState('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Get translations for current language
@@ -65,6 +67,39 @@ function App() {
       navigator.serviceWorker.controller.postMessage('CHECK_ONLINE_STATUS', [messageChannel.port2]);
     }
   }, []);
+
+  // Speech Recognition Setup
+  const startListening = () => {
+    if (!speechSupported) return;
+    
+    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.lang = currentLanguage === 'sw' ? 'sw-KE' : currentLanguage === 'fr' ? 'fr-FR' : 'en-US';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+      setIsListening(false);
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -221,13 +256,32 @@ function App() {
           {/* Input Form */}
           <div className="p-4 bg-white border-t border-gray-200">
             <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={t.inputPlaceholder}
-                className="flex-1 p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 placeholder-gray-500"
-                disabled={isLoading || !isOnline}
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder={t.inputPlaceholder}
+                  className="flex-1 p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 placeholder-gray-500"
+                  disabled={isLoading || !isOnline}
+                />
+                {speechSupported && (
+                  <button
+                    type="button"
+                    onClick={startListening}
+                    disabled={isLoading || !isOnline || isListening}
+                    className="p-4 text-blue-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-xl border border-blue-500"
+                    title="Start voice input"
+                  >
+                    {isListening ? (
+                      <span className="flex items-center justify-center w-6 h-6">
+                        <span className="animate-pulse">🎤</span>
+                      </span>
+                    ) : (
+                      <span className="flex items-center justify-center w-6 h-6">🎤</span>
+                    )}
+                  </button>
+                )}
+              </div>
               <button
                 type="submit"
                 disabled={isLoading || !input.trim() || !isOnline}
