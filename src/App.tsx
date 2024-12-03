@@ -153,9 +153,15 @@ function App() {
                   <h2 className="text-xl font-semibold text-gray-800 mb-2">
                     {t.welcomeMessage}
                   </h2>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 mb-4">
                     {t.welcomeDescription}
                   </p>
+                  <div className="mt-4 space-y-2">
+                    <p className="text-blue-600">• {t.suggestions.general}</p>
+                    <p className="text-blue-600">• {t.suggestions.lifestyle}</p>
+                    <p className="text-blue-600">• {t.suggestions.terms}</p>
+                    <p className="text-blue-600">• {t.suggestions.wellness}</p>
+                  </div>
                 </div>
               )}
               {messages.map((message, index) => (
