@@ -119,22 +119,17 @@ function App() {
         </div>
       )}
       <div className="max-w-4xl mx-auto">
-        <header className="text-center mb-8 p-6 bg-white rounded-lg shadow-sm">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex-1">
-              {/* Empty div for spacing */}
-            </div>
-            <h1 className="text-4xl font-bold text-blue-600">AI Health Assistant</h1>
-            <div className="flex-1 flex justify-end">
-              <LanguageSelector
-                currentLanguage={currentLanguage}
-                onLanguageChange={(code) => {
-                  setCurrentLanguage(code);
-                  localStorage.setItem('preferredLanguage', code);
-                }}
-              />
-            </div>
+        <header className="relative text-center mb-8 p-6 bg-white rounded-lg shadow-sm">
+          <div className="absolute top-4 right-4">
+            <LanguageSelector
+              currentLanguage={currentLanguage}
+              onLanguageChange={(code) => {
+                setCurrentLanguage(code);
+                localStorage.setItem('preferredLanguage', code);
+              }}
+            />
           </div>
+          <h1 className="text-4xl font-bold text-blue-600 mb-3">AI Health Assistant</h1>
           <p className="text-gray-600">Your personal AI health companion. Ask me anything about health and wellness!</p>
         </header>
 
