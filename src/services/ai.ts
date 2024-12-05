@@ -214,3 +214,6 @@ export async function getAIResponse(userMessage: string): Promise<string> {
     return "I apologize, but I'm having trouble processing your request. Please try again in a moment. If the problem persists, try refreshing the page.";
   }
 }
+
+// Export the AI response function
+export const sendMessage = getAIResponse;
