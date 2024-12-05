@@ -31,9 +31,21 @@ body {
 }
 
 .app-container {
-  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 0;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .app-container {
+    max-width: 1000px;
+    padding: 2rem 1rem;
+  }
 }
 
 .app-header {
@@ -52,36 +64,39 @@ body {
 }
 
 .chat-container {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  max-width: 800px;
-  margin: 2rem auto;
-  width: 100%;
+  flex: 1;
+  height: calc(100vh - 64px); /* Adjust for header height */
+  max-height: calc(100vh - 64px);
   background: var(--glass-bg);
   backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  border-radius: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .chat-container {
+    border-radius: 1rem;
+    margin: 2rem auto;
+    height: 600px;
+    max-height: calc(100vh - 120px);
+  }
 }
 
 .message-list {
-  padding: 1.5rem;
+  flex: 1;
   overflow-y: auto;
-  max-height: calc(100vh - 250px);
+  padding: 1rem;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .message {
-  margin: 1rem 0;
-  padding: 1rem;
-  border-radius: 1rem;
-  max-width: 80%;
-  animation: fadeIn 0.3s ease-in-out;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(5px);
-  border: 1px solid var(--glass-border);
+  max-width: 85%;
+  margin: 0.5rem 0;
+  word-wrap: break-word;
 }
 
 .message.user {
@@ -101,103 +116,98 @@ body {
 }
 
 .input-container {
-  display: flex;
-  gap: 0.5rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding: 0.75rem;
   border-top: 1px solid var(--glass-border);
-  margin-top: auto;
+  z-index: 10;
 }
 
 .input-wrapper {
   display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 1.5rem;
-  padding: 0.5rem 1rem;
-  margin: 0 1rem;
+  gap: 0.5rem;
+  align-items: flex-end;
 }
 
 .input-field {
   flex: 1;
-  padding: 0.75rem 1rem;
+  min-height: 44px;
+  max-height: 120px;
+  padding: 0.75rem;
+  border: 1px solid var(--glass-border);
   border-radius: 0.5rem;
-  border: 1px solid rgba(229, 231, 235, 0.5);
-  background: rgba(255, 255, 255, 0.05);
-  color: inherit;
+  resize: none;
   font-size: 1rem;
-  transition: all 0.2s ease;
+  line-height: 1.5;
+  background: white;
 }
 
-.input-field:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(44, 125, 160, 0.2);
-}
-
-.mic-button {
-  background: transparent;
-  border: none;
-  padding: 0.5rem;
-  cursor: pointer;
-  color: white;
-  opacity: 0.8;
-  transition: opacity 0.2s;
-}
-
-.mic-button:hover {
-  opacity: 1;
+/* Fix for iOS input zoom */
+@media screen and (max-width: 640px) {
+  .input-field {
+    font-size: 16px !important;
+  }
 }
 
 .send-button {
-  background: var(--primary-color);
-  border: none;
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 0.5rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
   cursor: pointer;
-  transition: transform 0.2s;
-  margin-left: 0.5rem;
 }
 
-.send-button:hover {
-  transform: scale(1.05);
+.send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
+/* Fix for mobile viewport height issues */
+.chat-container {
+  height: calc(var(--vh, 1vh) * 100 - 64px);
+}
+
+/* Categories grid for mobile */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .categories-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+}
+
+/* Ensure the disclaimer is always visible */
 .disclaimer {
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.9);
-  background: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  color: var(--text-light);
+  background: var(--background-light);
   border-top: 1px solid var(--glass-border);
-  line-height: 1.5;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  margin-top: auto;
 }
 
 /* Hide scrollbar but keep functionality */
-::-webkit-scrollbar {
+.message-list::-webkit-scrollbar {
   width: 0px;
   background: transparent;
 }
 
 /* For Firefox */
-* {
+.message-list {
   scrollbar-width: none;
-}
-
-@keyframes slideIn {
-  from { transform: translateX(-20px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
 }
 
 .button {
@@ -253,6 +263,30 @@ body {
   font-size: 0.75rem;
   opacity: 0.6;
   margin-top: 0.25rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.mic-button {
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: white;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.mic-button:hover {
+  opacity: 1;
 }
 
 @media (max-width: 640px) {

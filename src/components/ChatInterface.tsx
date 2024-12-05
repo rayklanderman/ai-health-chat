@@ -47,6 +47,7 @@ export default function ChatInterface({ language }: Props) {
   const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -61,26 +62,18 @@ export default function ChatInterface({ language }: Props) {
   }, [messages]);
 
   useEffect(() => {
-    // Update welcome message when language changes
-    setMessages(messages => {
-      const welcomeMsg = messages[0];
-      if (!welcomeMsg.isUser) {
-        return [{
-          text: translations[language as keyof typeof translations].welcome + '\n\n' + 
-               translations[language as keyof typeof translations].askAbout,
-          isUser: false,
-          timestamp: new Date(),
-          categories: [
-            { text: translations[language as keyof typeof translations].categories.general, color: 'bg-blue-100 text-blue-800' },
-            { text: translations[language as keyof typeof translations].categories.wellness, color: 'bg-green-100 text-green-800' },
-            { text: translations[language as keyof typeof translations].categories.maternal, color: 'bg-purple-100 text-purple-800' },
-            { text: translations[language as keyof typeof translations].categories.nutrition, color: 'bg-orange-100 text-orange-800' }
-          ]
-        }, ...messages.slice(1)];
+    const adjustHeight = () => {
+      if (chatContainerRef.current) {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+        chatContainerRef.current.style.height = `calc(var(--vh, 1vh) * 100 - 180px)`;
       }
-      return messages;
-    });
-  }, [language]);
+    };
+
+    adjustHeight();
+    window.addEventListener('resize', adjustHeight);
+    return () => window.removeEventListener('resize', adjustHeight);
+  }, []);
 
   const clearChat = () => {
     setMessages([{
@@ -224,101 +217,106 @@ export default function ChatInterface({ language }: Props) {
   };
 
   return (
-    <div className="flex flex-col h-[500px] sm:h-[600px]">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={messagesEndRef}>
+    <div className="flex flex-col h-full max-h-[calc(100vh-180px)] bg-white rounded-lg shadow-lg">
+      <div className="flex items-center justify-between p-4 border-b">
+        <h2 className="text-xl font-semibold text-gray-800">
+          {translations[language as keyof typeof translations].title}
+        </h2>
+        <button
+          onClick={clearChat}
+          className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
+        >
+          Clear Chat
+        </button>
+      </div>
+
+      <div 
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto p-4 space-y-4"
+        style={{
+          height: 'calc(100vh - 280px)',
+          minHeight: '300px',
+          scrollBehavior: 'smooth'
+        }}
+      >
         {messages.map((message, index) => (
           <div
             key={index}
             className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
           >
-            {!message.isUser && (
-              <div className="flex-shrink-0 mr-3">
-                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                  </svg>
-                </div>
-              </div>
-            )}
             <div
-              className={`max-w-[85%] sm:max-w-[75%] ${
-                message.isUser ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800'
-              } p-4 rounded-2xl ${message.isUser ? 'rounded-tr-none' : 'rounded-tl-none'}`}
+              className={`max-w-[85%] rounded-lg p-3 ${
+                message.isUser
+                  ? 'bg-blue-600 text-white rounded-br-none'
+                  : 'bg-gray-100 text-gray-800 rounded-bl-none'
+              }`}
             >
-              {!message.isUser && (
-                <div className="font-medium mb-1">
-                  {translations[language as keyof typeof translations].assistant}
-                </div>
-              )}
-              <div>{message.text}</div>
+              <div className="whitespace-pre-wrap break-words">{message.text}</div>
               {message.categories && (
-                <div className="grid grid-cols-2 gap-4 mt-4 mx-auto max-w-lg">
-                  {message.categories.map((category, idx) => (
-                    <div
-                      key={idx}
-                      className={`${category.color} p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer backdrop-blur-sm`}
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {message.categories.map((category, i) => (
+                    <span
+                      key={i}
+                      className={`text-xs px-2 py-1 rounded-full ${category.color}`}
                     >
-                      <div className="text-center font-medium">
-                        {category.text}
-                      </div>
-                    </div>
+                      {category.text}
+                    </span>
                   ))}
                 </div>
               )}
+              <div className="text-xs opacity-70 mt-1">
+                {message.timestamp.toLocaleTimeString()}
+              </div>
             </div>
           </div>
         ))}
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="flex-shrink-0 mr-3">
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                </svg>
-              </div>
-            </div>
-            <div className="max-w-[85%] sm:max-w-[75%] bg-gray-100 text-gray-800 p-4 rounded-2xl rounded-tl-none">
-              <div className="font-medium mb-1">
-                {translations[language as keyof typeof translations].assistant}
-              </div>
-              <div className="flex gap-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
-              </div>
-            </div>
+        <div ref={messagesEndRef} />
+      </div>
+
+      <div className="border-t p-4 bg-white rounded-b-lg">
+        <div className="flex items-end space-x-2">
+          <div className="flex-1 min-h-[44px]">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={(e) => {
+                setInput(e.target.value);
+                e.target.style.height = 'auto';
+                e.target.style.height = `${Math.min(e.target.scrollHeight, 120)}px`;
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
+              placeholder={translations[language as keyof typeof translations].placeholder}
+              className="w-full p-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"
+              style={{
+                minHeight: '44px',
+                maxHeight: '120px'
+              }}
+            />
           </div>
-        )}
-      </div>
-      <div className="border-t border-gray-200 bg-white p-4">
-        <form onSubmit={handleSubmit} className="relative flex items-center">
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={translations[language as keyof typeof translations].placeholder}
-            className="flex-1 bg-gray-100 text-gray-800 placeholder-gray-500 rounded-full py-3 pl-4 pr-24 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            rows={1}
-          />
           <button
-            type="button"
-            className="absolute right-12 text-gray-500 hover:text-gray-700 transition-colors"
-            onClick={toggleListening}
-            title={isListening ? 'Stop Recording' : 'Start Recording'}
+            onClick={handleSubmit}
+            disabled={isLoading || !input.trim()}
+            className={`p-3 rounded-lg ${
+              isLoading || !input.trim()
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700'
+            } text-white transition-colors`}
           >
-            <MicrophoneIcon className={`h-5 w-5 ${isListening ? 'text-red-500' : ''}`} />
+            {isLoading ? (
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <PaperAirplaneIcon className="w-6 h-6" />
+            )}
           </button>
-          <button
-            type="submit"
-            className="absolute right-3 bg-blue-600 text-white rounded-full p-2 hover:bg-blue-500 transition-colors disabled:opacity-50"
-            disabled={!input.trim() || isLoading}
-          >
-            <PaperAirplaneIcon className="h-4 w-4" />
-          </button>
-        </form>
+        </div>
       </div>
-      <div className="text-xs sm:text-sm text-gray-600 p-4 bg-gray-50 text-center font-medium">
+
+      <div className="p-3 text-xs text-gray-500 text-center bg-gray-50 rounded-b-lg">
         {translations[language as keyof typeof translations].disclaimer}
       </div>
     </div>
