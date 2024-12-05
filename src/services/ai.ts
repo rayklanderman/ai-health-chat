@@ -28,17 +28,17 @@ const RATE_LIMIT = {
   requests: 0,
   lastReset: Date.now(),
   resetInterval: 3600000, // 1 hour in milliseconds
-  maxRequests: 30, // Further reduced from 50 to be more conservative
+  maxRequests: 20, // Reduced from 30 to be more conservative
   cooldownPeriod: 3600000, // 1 hour cooldown when limit is hit
   lastRequestTime: Date.now(),
-  minRequestInterval: 5000 // Increased to 5 seconds between requests
+  minRequestInterval: 10000 // Increased to 10 seconds between requests
 };
 
 // Retry configuration
 const RETRY_CONFIG = {
-  maxRetries: 3,
-  initialDelay: 2000, // 2 seconds
-  maxDelay: 10000, // 10 seconds
+  maxRetries: 2, // Reduced from 3 to avoid hitting rate limits
+  initialDelay: 5000, // Increased to 5 seconds
+  maxDelay: 15000, // Increased to 15 seconds
 };
 
 // Exponential backoff for retries
@@ -154,30 +154,25 @@ export async function getAIResponse(userMessage: string): Promise<string> {
       return cachedResponse;
     }
 
-    // If we're already in a rate-limited state, return a fallback response
+    // Check if we're in a cooldown period
+    const now = Date.now();
     if (RATE_LIMIT.requests >= RATE_LIMIT.maxRequests) {
-      const now = Date.now();
       const timeUntilReset = RATE_LIMIT.lastReset + RATE_LIMIT.resetInterval - now;
       if (timeUntilReset > 0) {
-        return getNextFallbackResponse();
+        const minutesLeft = Math.ceil(timeUntilReset / 60000);
+        return `I apologize, but I've reached my request limit. Please try again in about ${minutesLeft} ${minutesLeft === 1 ? 'minute' : 'minutes'}. This helps ensure stable service for all users.`;
       }
+      // If cooldown period is over, reset the rate limit
+      resetRateLimit();
     }
 
     // Enforce minimum interval between requests
-    const now = Date.now();
     const timeSinceLastRequest = now - RATE_LIMIT.lastRequestTime;
     if (timeSinceLastRequest < RATE_LIMIT.minRequestInterval) {
-      await new Promise(resolve => setTimeout(resolve, RATE_LIMIT.minRequestInterval - timeSinceLastRequest));
+      const waitTime = RATE_LIMIT.minRequestInterval - timeSinceLastRequest;
+      await new Promise(resolve => setTimeout(resolve, waitTime));
     }
     RATE_LIMIT.lastRequestTime = now;
-
-    // Check and reset rate limit if needed
-    resetRateLimit();
-    
-    // Check if we're in a cooldown period
-    if (RATE_LIMIT.requests >= RATE_LIMIT.maxRequests) {
-      return getNextFallbackResponse();
-    }
     
     RATE_LIMIT.requests++;
 
@@ -192,26 +187,27 @@ export async function getAIResponse(userMessage: string): Promise<string> {
   } catch (error: any) {
     console.error('AI Response Error:', error);
     
-    // Handle specific error types
-    if (error.message?.includes('rate limit exceeded')) {
+    // Handle rate limit errors
+    if (error.message?.toLowerCase().includes('rate limit')) {
       RATE_LIMIT.requests = RATE_LIMIT.maxRequests; // Force cooldown
-      return getNextFallbackResponse();
+      return "I'm currently experiencing high demand. Please wait a few minutes before trying again. Your patience helps maintain a stable service for everyone.";
     }
     
-    if (error.message?.includes('invalid api key')) {
-      return "There seems to be an issue with the API configuration. Please check if your API key is properly set up.";
+    if (error.message?.toLowerCase().includes('api key')) {
+      return "There seems to be an issue with the service configuration. The team has been notified and is working on it.";
     }
 
-    if (error.message?.includes('blocked')) {
-      return "Your request contains content that cannot be processed. Please ensure your question is about general health information.";
+    if (error.message?.toLowerCase().includes('blocked') || error.message?.toLowerCase().includes('safety')) {
+      return "I apologize, but I cannot process that type of content. Please ensure your question is about general health information and doesn't contain sensitive or inappropriate content.";
     }
 
     // Network or timeout errors
-    if (error.message?.includes('network') || error.message?.includes('timeout')) {
-      return "I'm having trouble connecting to the server. Please check your internet connection and try again.";
+    if (error.message?.toLowerCase().includes('network') || error.message?.toLowerCase().includes('timeout')) {
+      return "I'm having trouble connecting to the service. Please check your internet connection and try again in a moment.";
     }
 
-    return "I apologize, but I'm having trouble processing your request. Please try again in a moment. If the problem persists, try refreshing the page.";
+    // Generic error with guidance
+    return "I encountered an unexpected error. Please try:\n1. Waiting a few moments\n2. Refreshing the page\n3. Asking your question in a different way";
   }
 }
 
