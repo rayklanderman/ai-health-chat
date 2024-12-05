@@ -49,3 +49,5 @@ coverage/
 *.private.*
 TODO.md
 NOTES.md
+
+.vercel

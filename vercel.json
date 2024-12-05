@@ -5,9 +5,6 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "outputDirectory": "dist",
-  "env": {
-    "VITE_GEMINI_API_KEY": "AIzaSyBb1fDGQPvY-zqxMbF6Njrny-k2iwvbCvc"
-  },
   "routes": [
     { "handle": "filesystem" },
     {

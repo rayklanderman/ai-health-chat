@@ -1,6 +1,6 @@
 # AI Health Assistant
 
-A modern, accessible health chat application powered by Google's Gemini AI.
+A modern, accessible health chat application powered by advanced AI technology.
 
 ## Features
 
@@ -56,7 +56,7 @@ This AI assistant provides general health information and emergency guidance. Wh
 - TypeScript
 - Vite
 - Tailwind CSS
-- Google Gemini AI
+- Advanced AI Integration
 - Web Speech API
 - Progressive Web App (PWA)
 
@@ -73,9 +73,9 @@ cd ai-health-chat
 npm install
 ```
 
-3. Create a `.env` file with your Gemini API key
+3. Create a `.env` file with your API key
 ```bash
-VITE_GEMINI_API_KEY=your_api_key_here
+VITE_API_KEY=your_api_key_here
 ```
 
 4. Start the development server
@@ -126,7 +126,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Google Gemini AI for powering the health assistant
+- Advanced AI technology for powering the health assistant
 - Web Speech API for voice input capabilities
 - React and Vite communities
 - Healthcare professionals who provided guidance
