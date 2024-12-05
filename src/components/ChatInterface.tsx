@@ -84,6 +84,31 @@ export default function ChatInterface({ language }: Props) {
     return () => window.removeEventListener('resize', adjustHeight);
   }, []);
 
+  useEffect(() => {
+    // Update welcome message when language changes
+    setMessages(messages => {
+      const welcomeMsg = messages[0];
+      if (!welcomeMsg.isUser) {
+        return [
+          {
+            text: translations[language as keyof typeof translations].welcome + '\n\n' + 
+                 translations[language as keyof typeof translations].askAbout,
+            isUser: false,
+            timestamp: welcomeMsg.timestamp,
+            categories: [
+              { text: translations[language as keyof typeof translations].categories.general, color: 'bg-blue-100 text-blue-800' },
+              { text: translations[language as keyof typeof translations].categories.wellness, color: 'bg-green-100 text-green-800' },
+              { text: translations[language as keyof typeof translations].categories.maternal, color: 'bg-purple-100 text-purple-800' },
+              { text: translations[language as keyof typeof translations].categories.nutrition, color: 'bg-orange-100 text-orange-800' }
+            ]
+          },
+          ...messages.slice(1)
+        ];
+      }
+      return messages;
+    });
+  }, [language]);
+
   const clearChat = () => {
     setMessages([{
       text: translations[language as keyof typeof translations].welcome + '\n\n' + 
@@ -250,7 +275,7 @@ export default function ChatInterface({ language }: Props) {
 
       <div 
         ref={chatContainerRef}
-        className="flex-1 overflow-y-auto px-4 py-3 space-y-4"
+        className="flex-1 overflow-y-auto p-4 space-y-4"
       >
         {/* Chat Messages */}
         {messages.map((message, index) => (
@@ -258,32 +283,56 @@ export default function ChatInterface({ language }: Props) {
             key={index}
             className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
           >
-            <div
-              className={`max-w-[85%] rounded-lg p-3 ${
-                message.isUser
-                  ? 'bg-blue-600 text-white rounded-br-none'
-                  : 'bg-gray-100 text-gray-800 rounded-bl-none'
-              }`}
-            >
-              <div className="whitespace-pre-wrap break-words">{message.text}</div>
-              {message.categories && (
-                <div className="grid grid-cols-2 gap-2 mt-3">
-                  {message.categories.map((category, i) => (
-                    <div
-                      key={i}
-                      className={`p-2.5 rounded-lg flex items-center justify-center ${category.color} shadow-sm`}
-                    >
-                      <span className="text-sm font-medium">{category.text}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div className="text-xs opacity-70 mt-2">
-                {message.timestamp.toLocaleTimeString()}
+            <div className={`flex items-start max-w-[80%] ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+              {/* Icon for AI or User */}
+              <div className={`flex-shrink-0 ${message.isUser ? 'ml-2' : 'mr-2'}`}>
+                {message.isUser ? (
+                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
+                      <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              
+              <div
+                className={`rounded-lg p-3 ${
+                  message.isUser
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 text-gray-800'
+                }`}
+              >
+                <div className="whitespace-pre-wrap">{message.text}</div>
+                {message.categories && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {message.categories.map((category, catIndex) => (
+                      <span
+                        key={catIndex}
+                        className={`px-2 py-1 rounded text-sm ${category.color}`}
+                      >
+                        {category.text}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
         ))}
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="bg-gray-100 rounded-lg p-3 text-gray-800">
+              {translations[language as keyof typeof translations].thinking}
+            </div>
+          </div>
+        )}
         <div ref={messagesEndRef} className="h-4" />
       </div>
 
