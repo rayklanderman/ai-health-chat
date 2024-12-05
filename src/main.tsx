@@ -9,15 +9,21 @@ if (!import.meta.env.VITE_GEMINI_API_KEY) {
 }
 
 // Register Service Worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('SW registered:', registration);
-      })
-      .catch(registrationError => {
-        console.log('SW registration failed:', registrationError);
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', async () => {
+    try {
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+        type: 'module'
       });
+      
+      // Only log in development
+      if (import.meta.env.DEV) {
+        console.log('Service Worker registered successfully');
+      }
+    } catch (error) {
+      console.error('Service Worker registration failed:', error);
+    }
   });
 }
 
