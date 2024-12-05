@@ -3,215 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offline - AI Health Assistant</title>
+    <title>Offline - AI Health Chat</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <style>
         :root {
-            --primary-color: #0891b2;
-            --secondary-color: #164e63;
-            --background-color: #f0f9ff;
-            --text-color: #0c4a6e;
-            --error-color: #dc2626;
-            --success-color: #059669;
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --background: #f8fafc;
         }
-
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .icon {
-            font-size: 48px;
-            margin-bottom: 1rem;
-        }
-
-        h1 {
-            color: var(--primary-color);
-            margin: 0.5rem 0;
-            font-size: 2rem;
-        }
-
-        .subtitle {
-            color: var(--text-color);
-            opacity: 0.8;
-            margin-bottom: 1rem;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .card h2 {
-            color: var(--primary-color);
-            margin-top: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background);
+            color: #1e293b;
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
+            padding: 1rem;
         }
-
-        .emergency-numbers {
-            background-color: #fee2e2;
-            border-left: 4px solid var(--error-color);
+        
+        .container {
+            max-width: 28rem;
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-
-        .basic-tips {
-            background-color: #ecfdf5;
-            border-left: 4px solid var(--success-color);
+        
+        .icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
         }
-
-        .number-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .number-list li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .number-list li:last-child {
-            border-bottom: none;
-        }
-
-        .tips-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .tips-list li {
+        
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
             margin-bottom: 1rem;
-            padding-left: 1.5rem;
-            position: relative;
+            color: var(--primary);
         }
-
-        .tips-list li::before {
-            content: "•";
-            color: var(--success-color);
-            font-weight: bold;
-            position: absolute;
-            left: 0;
+        
+        p {
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+            color: #475569;
         }
-
-        .reconnect-btn {
-            display: inline-block;
-            background-color: var(--primary-color);
+        
+        button {
+            background-color: var(--primary);
             color: white;
+            border: none;
             padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            text-decoration: none;
-            margin-top: 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
             transition: background-color 0.2s;
         }
-
-        .reconnect-btn:hover {
-            background-color: var(--secondary-color);
+        
+        button:hover {
+            background-color: var(--primary-dark);
         }
-
-        @media (max-width: 600px) {
+        
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1e293b;
+                color: #f8fafc;
+            }
+            
             .container {
-                padding: 1rem;
+                background: #0f172a;
             }
-
-            .header {
-                padding: 1rem;
-            }
-
-            h1 {
-                font-size: 1.5rem;
+            
+            p {
+                color: #cbd5e1;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="icon">🏥</div>
-            <h1>You're Offline</h1>
-            <p class="subtitle">AI Health Assistant is currently offline. Here's some important health information you can access while offline.</p>
-            <button onclick="window.location.reload()" class="reconnect-btn">Try to Reconnect</button>
-        </div>
-
-        <div class="card emergency-numbers">
-            <h2>🚨 Emergency Numbers</h2>
-            <ul class="number-list">
-                <li>
-                    <span>Emergency Services (Police, Fire, Ambulance)</span>
-                    <strong>999 or 112</strong>
-                </li>
-                <li>
-                    <span>Kenya Red Cross</span>
-                    <strong>1199</strong>
-                </li>
-                <li>
-                    <span>St. John Ambulance</span>
-                    <strong>0721-225-285</strong>
-                </li>
-                <li>
-                    <span>National Disaster Operations</span>
-                    <strong>0202-386-600</strong>
-                </li>
-            </ul>
-        </div>
-
-        <div class="card basic-tips">
-            <h2>💡 Basic First Aid Tips</h2>
-            <ul class="tips-list">
-                <li><strong>Choking:</strong> Stand behind the person and perform the Heimlich maneuver by giving abdominal thrusts.</li>
-                <li><strong>Bleeding:</strong> Apply direct pressure to the wound with a clean cloth or bandage. Keep pressure until bleeding stops.</li>
-                <li><strong>Burns:</strong> Cool the burn under cool (not cold) running water for at least 10 minutes. Do not apply ice.</li>
-                <li><strong>Heart Attack Signs:</strong> Chest pain/pressure, shortness of breath, pain in arms/jaw. Call emergency services immediately.</li>
-                <li><strong>Stroke Signs (FAST):</strong>
-                    <br>- Face drooping
-                    <br>- Arm weakness
-                    <br>- Speech difficulty
-                    <br>- Time to call emergency
-                </li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <h2>🌡️ Heat Exhaustion vs Heat Stroke</h2>
-            <ul class="tips-list">
-                <li><strong>Heat Exhaustion:</strong> Heavy sweating, cool/clammy skin, dizziness, headache. Move to cool place, sip water.</li>
-                <li><strong>Heat Stroke:</strong> High body temperature, hot/red skin, confusion. Medical emergency - call for help immediately.</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <h2>💊 General Health Tips</h2>
-            <ul class="tips-list">
-                <li>Stay hydrated - drink water regularly</li>
-                <li>Wash hands frequently with soap and water</li>
-                <li>Keep basic first aid kit at home</li>
-                <li>Know your emergency contacts</li>
-                <li>Keep important medications accessible</li>
-            </ul>
-        </div>
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+        </svg>
+        <h1>You're Offline</h1>
+        <p>It looks like you've lost your internet connection. Some features may be limited until you're back online.</p>
+        <button onclick="window.location.reload()">Try Again</button>
     </div>
+    <script>
+        window.addEventListener('online', () => window.location.reload());
+    </script>
 </body>
 </html>

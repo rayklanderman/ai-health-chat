@@ -8,12 +8,19 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png', 'offline.html'],
+      includeAssets: [
+        'favicon.svg',
+        'favicon-32x32.png',
+        'favicon-16x16.png',
+        'android-chrome-192x192.png',
+        'android-chrome-512x512.png'
+      ],
       manifest: {
-        name: 'AI Health Assistant',
-        short_name: 'Health AI',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        name: 'AI Health Chat',
+        short_name: 'Health Chat',
+        description: 'AI-powered health assistant for general wellness information',
+        theme_color: '#0284c7',
+        background_color: '#0284c7',
         display: 'standalone',
         scope: '/',
         start_url: '/',
@@ -21,37 +28,53 @@ export default defineConfig({
           {
             src: '/android-chrome-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           },
           {
             src: '/android-chrome-512x512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           }
-        ]
+        ],
+        shortcuts: [
+          {
+            name: 'New Chat',
+            short_name: 'Chat',
+            description: 'Start a new health chat session',
+            url: '/?source=pwa',
+            icons: [{ src: '/android-chrome-192x192.png', sizes: '192x192' }]
+          }
+        ],
+        categories: ['health', 'medical', 'ai', 'chat']
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
+            urlPattern: /^https:\/\/ai-health-chat.*\.vercel\.app\/.*/i,
+            handler: 'NetworkFirst',
             options: {
-              cacheName: 'google-fonts-cache',
+              cacheName: 'api-cache',
+              networkTimeoutSeconds: 10,
               expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 // 24 hours
               },
               cacheableResponse: {
                 statuses: [0, 200]
               }
             }
+          },
+          {
+            urlPattern: /^https:\/\/generativelanguage\.googleapis\.com\/.*/i,
+            handler: 'NetworkOnly'
           }
         ]
       }
     })
   ],
-  base: '/',
   build: {
     outDir: 'dist',
     sourcemap: true,
