@@ -294,9 +294,8 @@ export default function ChatInterface({ language }: Props) {
                   </div>
                 ) : (
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
-                      <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                     </svg>
                   </div>
                 )}
@@ -309,13 +308,13 @@ export default function ChatInterface({ language }: Props) {
                     : 'bg-gray-100 text-gray-800'
                 }`}
               >
-                <div className="whitespace-pre-wrap">{message.text}</div>
+                <div className="whitespace-pre-wrap text-base">{message.text}</div>
                 {message.categories && (
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="mt-4 grid grid-cols-2 gap-3">
                     {message.categories.map((category, catIndex) => (
                       <span
                         key={catIndex}
-                        className={`px-2 py-1 rounded text-sm ${category.color}`}
+                        className={`px-4 py-2 rounded-lg text-base font-medium ${category.color} shadow-sm`}
                       >
                         {category.text}
                       </span>

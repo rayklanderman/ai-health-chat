@@ -11,6 +11,7 @@ const SUPPORTED_LANGUAGES: Language[] = [
   { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
   { code: 'sw', name: 'Swahili', nativeName: 'Kiswahili', flag: '🇰🇪' },
   { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷' },
+  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' }
 ];
 
 interface LanguageSelectorProps {
@@ -25,6 +26,11 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const currentLang = SUPPORTED_LANGUAGES.find(lang => lang.code === currentLanguage) || SUPPORTED_LANGUAGES[0];
+
+  const handleLanguageSelect = (code: string) => {
+    onLanguageChange(code);
+    setIsOpen(false);
+  };
 
   return (
     <div className="relative">
@@ -50,25 +56,20 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           <div
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
-          />
-          <div className="absolute right-0 mt-2 w-48 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-20">
-            <div className="py-1">
-              {SUPPORTED_LANGUAGES.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => {
-                    onLanguageChange(lang.code);
-                    setIsOpen(false);
-                  }}
-                  className={`flex items-center w-full px-4 py-3 text-sm hover:bg-blue-50 transition-colors duration-200 ${
-                    currentLanguage === lang.code ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-700'
-                  }`}
-                >
-                  <span className="text-xl mr-3">{lang.flag}</span>
-                  <span>{lang.nativeName}</span>
-                </button>
-              ))}
-            </div>
+          ></div>
+          <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-lg shadow-xl z-20 border border-gray-200">
+            {SUPPORTED_LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => handleLanguageSelect(lang.code)}
+                className={`w-full px-4 py-2 text-left hover:bg-blue-50 flex items-center space-x-2 ${
+                  currentLanguage === lang.code ? 'bg-blue-50' : ''
+                }`}
+              >
+                <span className="text-xl">{lang.flag}</span>
+                <span className="font-medium">{lang.nativeName}</span>
+              </button>
+            ))}
           </div>
         </>
       )}
