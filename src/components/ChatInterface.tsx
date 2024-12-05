@@ -188,65 +188,72 @@ export default function ChatInterface({ language }: Props) {
     }).format(date);
   };
 
-  const initializeSpeechRecognition = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      console.error('Speech recognition not supported');
-      setIsVoiceSupported(false);
-      return null;
+  const startVoiceInput = () => {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert(translations[language as keyof typeof translations].voiceNotSupported);
+      return;
     }
-    const recognition = new SpeechRecognition();
-    
-    // Set language based on current selection
-    recognition.lang = language === 'en' ? 'en-US' : 'zh-CN';
+
+    const recognition = new (window as any).webkitSpeechRecognition();
     recognition.continuous = false;
     recognition.interimResults = false;
+    recognition.lang = language === 'sw' ? 'sw-KE' : 
+                      language === 'fr' ? 'fr-FR' : 
+                      language === 'es' ? 'es-ES' : 'en-US';
 
     recognition.onstart = () => {
-      setIsListening(true);
       setIsRecording(true);
     };
 
-    recognition.onresult = (event) => {
+    recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setInput((prev) => prev + ' ' + transcript.trim());
+      setInput(transcript);
+      setIsRecording(false);
     };
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
-      setIsListening(false);
       setIsRecording(false);
+      
+      // Handle specific error types
+      switch (event.error) {
+        case 'network':
+          alert('Please check your internet connection and try again.');
+          break;
+        case 'not-allowed':
+        case 'permission-denied':
+          alert('Please allow microphone access to use voice input.');
+          break;
+        case 'no-speech':
+          alert('No speech was detected. Please try again.');
+          break;
+        case 'audio-capture':
+          alert('No microphone was found. Please ensure your microphone is connected.');
+          break;
+        default:
+          alert(translations[language as keyof typeof translations].errorMessage);
+      }
     };
 
     recognition.onend = () => {
-      setIsListening(false);
       setIsRecording(false);
     };
 
-    return recognition;
+    try {
+      recognition.start();
+    } catch (error) {
+      console.error('Speech recognition start error:', error);
+      setIsRecording(false);
+      alert(translations[language as keyof typeof translations].voiceNotSupported);
+    }
   };
-
-  // Initialize speech recognition when language changes
-  useEffect(() => {
-    const recognition = initializeSpeechRecognition();
-    return () => {
-      if (recognition) {
-        recognition.abort();
-      }
-    };
-  }, [language]);
 
   const toggleVoiceInput = () => {
     if (isListening) {
-      const recognition = initializeSpeechRecognition();
-      if (recognition) {
-        recognition.abort();
-      }
+      const recognition = new (window as any).webkitSpeechRecognition();
+      recognition.abort();
     } else {
-      const recognition = initializeSpeechRecognition();
-      if (recognition) {
-        recognition.start();
-      }
+      startVoiceInput();
     }
   };
 
