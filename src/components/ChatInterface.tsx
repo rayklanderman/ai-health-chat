@@ -130,7 +130,7 @@ export default function ChatInterface({ language }: Props) {
     setIsLoading(true);
 
     try {
-      const response = await getAIResponse(userMessage.text);
+      const response = await sendMessage(userMessage.text);
       setMessages(prev => [...prev, {
         text: response,
         isUser: false,
