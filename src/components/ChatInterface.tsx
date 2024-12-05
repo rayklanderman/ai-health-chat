@@ -1,31 +1,47 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { PaperAirplaneIcon, TrashIcon, ClipboardDocumentIcon, CheckIcon, MicrophoneIcon } from '@heroicons/react/24/solid';
-import { getAIResponse } from '../services/ai';
+import { useState, useRef, useEffect } from 'react'
+import { MicrophoneIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline'
+import { translations } from '../translations'
 
 interface Message {
   text: string;
   isUser: boolean;
   timestamp: Date;
   copied?: boolean;
+  categories?: {
+    text: string;
+    color: string;
+  }[];
 }
 
-export default function ChatInterface() {
+interface Props {
+  language: string;
+}
+
+export default function ChatInterface({ language }: Props) {
   const [messages, setMessages] = useState<Message[]>(() => {
-    const savedMessages = localStorage.getItem('chatHistory');
-    if (savedMessages) {
-      const parsedMessages = JSON.parse(savedMessages);
-      return parsedMessages.map((msg: any) => ({
-        ...msg,
-        timestamp: new Date(msg.timestamp)
-      }));
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('chatMessages');
+      if (saved) {
+        return JSON.parse(saved).map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+      }
     }
     return [{
-      text: "Hello! I'm your AI Health Assistant. How can I help you today?",
+      text: translations[language as keyof typeof translations].welcome + '\n\n' + 
+           translations[language as keyof typeof translations].askAbout,
       isUser: false,
       timestamp: new Date(),
+      categories: [
+        { text: translations[language as keyof typeof translations].categories.general, color: 'bg-blue-100 text-blue-800' },
+        { text: translations[language as keyof typeof translations].categories.wellness, color: 'bg-green-100 text-green-800' },
+        { text: translations[language as keyof typeof translations].categories.maternal, color: 'bg-purple-100 text-purple-800' },
+        { text: translations[language as keyof typeof translations].categories.nutrition, color: 'bg-orange-100 text-orange-800' }
+      ]
     }];
   });
-  
+
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -41,14 +57,43 @@ export default function ChatInterface() {
   }, [messages]);
 
   useEffect(() => {
-    localStorage.setItem('chatHistory', JSON.stringify(messages));
+    localStorage.setItem('chatMessages', JSON.stringify(messages));
   }, [messages]);
+
+  useEffect(() => {
+    // Update welcome message when language changes
+    setMessages(messages => {
+      const welcomeMsg = messages[0];
+      if (!welcomeMsg.isUser) {
+        return [{
+          text: translations[language as keyof typeof translations].welcome + '\n\n' + 
+               translations[language as keyof typeof translations].askAbout,
+          isUser: false,
+          timestamp: new Date(),
+          categories: [
+            { text: translations[language as keyof typeof translations].categories.general, color: 'bg-blue-100 text-blue-800' },
+            { text: translations[language as keyof typeof translations].categories.wellness, color: 'bg-green-100 text-green-800' },
+            { text: translations[language as keyof typeof translations].categories.maternal, color: 'bg-purple-100 text-purple-800' },
+            { text: translations[language as keyof typeof translations].categories.nutrition, color: 'bg-orange-100 text-orange-800' }
+          ]
+        }, ...messages.slice(1)];
+      }
+      return messages;
+    });
+  }, [language]);
 
   const clearChat = () => {
     setMessages([{
-      text: "Hello! I'm your AI Health Assistant. How can I help you today?",
+      text: translations[language as keyof typeof translations].welcome + '\n\n' + 
+           translations[language as keyof typeof translations].askAbout,
       isUser: false,
       timestamp: new Date(),
+      categories: [
+        { text: translations[language as keyof typeof translations].categories.general, color: 'bg-blue-100 text-blue-800' },
+        { text: translations[language as keyof typeof translations].categories.wellness, color: 'bg-green-100 text-green-800' },
+        { text: translations[language as keyof typeof translations].categories.maternal, color: 'bg-purple-100 text-purple-800' },
+        { text: translations[language as keyof typeof translations].categories.nutrition, color: 'bg-orange-100 text-orange-800' }
+      ]
     }]);
   };
 
@@ -116,7 +161,7 @@ export default function ChatInterface() {
     }).format(date);
   };
 
-  const initSpeechRecognition = useCallback(() => {
+  const initSpeechRecognition = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       console.error('Speech recognition not supported');
@@ -127,9 +172,9 @@ export default function ChatInterface() {
     recognition.interimResults = false;
     recognition.lang = 'en-US';
     return recognition;
-  }, []);
+  };
 
-  const startListening = useCallback(() => {
+  const startListening = () => {
     if (isListening) return;
 
     const recognition = initSpeechRecognition();
@@ -161,93 +206,121 @@ export default function ChatInterface() {
     } catch (err) {
       console.error('Speech recognition start error:', err);
     }
-  }, [isListening]);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  const toggleListening = () => {
+    if (isListening) {
+      setIsListening(false);
+    } else {
+      startListening();
+    }
+  };
 
   return (
-    <div className="chat-container">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-semibold">AI Health Assistant</h1>
-        <button
-          onClick={clearChat}
-          className="button"
-          title="Clear chat"
-        >
-          <TrashIcon className="icon" />
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto space-y-4 mb-4">
+    <div className="flex flex-col h-[500px] sm:h-[600px]">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4" ref={messagesEndRef}>
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`message ${message.isUser ? 'user' : 'assistant'}`}
+            className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
           >
-            <div className="flex justify-between items-start gap-2">
-              <div className="flex-1">{message.text}</div>
-              <div className="actions">
-                <button
-                  onClick={() => copyToClipboard(message.text, index)}
-                  className="p-1 rounded hover:bg-gray-200 transition-colors"
-                  title="Copy to clipboard"
-                >
-                  {message.copied ? (
-                    <CheckIcon className="icon text-green-500" />
-                  ) : (
-                    <ClipboardDocumentIcon className="icon text-gray-500" />
-                  )}
-                </button>
+            {!message.isUser && (
+              <div className="flex-shrink-0 mr-3">
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                  </svg>
+                </div>
               </div>
+            )}
+            <div
+              className={`max-w-[85%] sm:max-w-[75%] ${
+                message.isUser ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800'
+              } p-4 rounded-2xl ${message.isUser ? 'rounded-tr-none' : 'rounded-tl-none'}`}
+            >
+              {!message.isUser && (
+                <div className="font-medium mb-1">
+                  {translations[language as keyof typeof translations].assistant}
+                </div>
+              )}
+              <div>{message.text}</div>
+              {message.categories && (
+                <div className="grid grid-cols-2 gap-4 mt-4 mx-auto max-w-lg">
+                  {message.categories.map((category, idx) => (
+                    <div
+                      key={idx}
+                      className={`${category.color} p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer backdrop-blur-sm`}
+                    >
+                      <div className="text-center font-medium">
+                        {category.text}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="timestamp">{formatTimestamp(message.timestamp)}</div>
           </div>
         ))}
         {isLoading && (
-          <div className="message assistant">
-            <div className="flex gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+          <div className="flex justify-start">
+            <div className="flex-shrink-0 mr-3">
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                </svg>
+              </div>
+            </div>
+            <div className="max-w-[85%] sm:max-w-[75%] bg-gray-100 text-gray-800 p-4 rounded-2xl rounded-tl-none">
+              <div className="font-medium mb-1">
+                {translations[language as keyof typeof translations].assistant}
+              </div>
+              <div className="flex gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }} />
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
+              </div>
             </div>
           </div>
         )}
-        <div ref={messagesEndRef} />
       </div>
-
-      <form onSubmit={handleSubmit} className="input-container">
-        <textarea
-          ref={inputRef}
-          value={input}
-          onChange={(e) => {
-            setInput(e.target.value);
-            adjustTextareaHeight();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit();
-            }
-          }}
-          placeholder="Type your message..."
-          className="input-field"
-          rows={1}
-        />
-        <button
-          type="submit"
-          className="button"
-          disabled={isLoading || !input.trim()}
-          title="Send message"
-        >
-          <PaperAirplaneIcon className="icon" />
-        </button>
-        <button
-          onClick={startListening}
-          disabled={isLoading || isListening}
-          className={`button ${isListening ? 'bg-red-500 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
-          title={isListening ? 'Listening...' : 'Click to speak'}
-        >
-          <MicrophoneIcon className={`icon ${isListening ? 'animate-pulse' : ''}`} />
-        </button>
-      </form>
+      <div className="border-t border-gray-200 bg-white p-4">
+        <form onSubmit={handleSubmit} className="relative flex items-center">
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={translations[language as keyof typeof translations].placeholder}
+            className="flex-1 bg-gray-100 text-gray-800 placeholder-gray-500 rounded-full py-3 pl-4 pr-24 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            rows={1}
+          />
+          <button
+            type="button"
+            className="absolute right-12 text-gray-500 hover:text-gray-700 transition-colors"
+            onClick={toggleListening}
+            title={isListening ? 'Stop Recording' : 'Start Recording'}
+          >
+            <MicrophoneIcon className={`h-5 w-5 ${isListening ? 'text-red-500' : ''}`} />
+          </button>
+          <button
+            type="submit"
+            className="absolute right-3 bg-blue-600 text-white rounded-full p-2 hover:bg-blue-500 transition-colors disabled:opacity-50"
+            disabled={!input.trim() || isLoading}
+          >
+            <PaperAirplaneIcon className="h-4 w-4" />
+          </button>
+        </form>
+      </div>
+      <div className="text-xs sm:text-sm text-gray-600 p-4 bg-gray-50 text-center font-medium">
+        {translations[language as keyof typeof translations].disclaimer}
+      </div>
     </div>
   );
 }
